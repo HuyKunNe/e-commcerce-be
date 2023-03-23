@@ -46,7 +46,6 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui/**")
                 .permitAll()
                 .anyRequest().authenticated();
-
     }
 
     @Bean
