@@ -49,11 +49,14 @@ public class AccountServiceImp implements AccountService {
 
         @Override
         public AccountResponse register(RegisterDTO registerDTO) throws BadRequestException {
-                Account accountCheck = accountRepository.findByPhoneNumber(registerDTO.getPhoneNumber())
-                                .orElseThrow(() -> new BadRequestException(ValidationErrorMessage.PHONE_IS_EXIST));
-
-                Account account = accountRepository.findByEmail(registerDTO.getEmail())
-                                .orElseThrow(() -> new BadRequestException(ValidationErrorMessage.EMAIL_IS_EXIST));
+                Optional<Account> accountCheck = accountRepository.findByPhoneNumber(registerDTO.getPhoneNumber());
+                if (accountCheck.isPresent()) {
+                        throw new BadRequestException(ValidationErrorMessage.PHONE_IS_EXIST);
+                }
+                Optional<Account> account = accountRepository.findByEmail(registerDTO.getEmail());
+                if (account.isPresent()) {
+                        throw new BadRequestException(ValidationErrorMessage.EMAIL_IS_EXIST);
+                }
                 Role role = roleRepository.findByName(RoleName.CUSTOMER)
                                 .orElseThrow(() -> new BadRequestException(RoleErrorMessage.NOT_FOUND));
 
