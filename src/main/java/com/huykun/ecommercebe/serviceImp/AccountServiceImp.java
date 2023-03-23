@@ -69,7 +69,7 @@ public class AccountServiceImp implements AccountService {
                                 .email(registerDTO.getEmail())
                                 .firstName(registerDTO.getFirstName())
                                 .lastName(registerDTO.getLastName())
-                                .gender(registerDTO.getLastName())
+                                .gender(registerDTO.getGender())
                                 .phoneNumber(registerDTO.getPhoneNumber())
                                 .dob(Date.valueOf(dob))
                                 .status(AccountStatus.ACTIVATED)
