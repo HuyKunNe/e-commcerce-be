@@ -1,5 +1,7 @@
 package com.huykun.ecommercebe.response;
 
+import com.huykun.ecommercebe.entity.Customer;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,17 +15,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AccountResponse {
-
-    private String token;
-    private int accountId;
-    private String email;
-    private String fullName;
-    private String gender;
-    private String dob;
+public class AddressResponse {
+    private int id;
+    private String company;
+    private String nationality;
+    private String city;
+    private String district;
+    private String street;
+    private String apartment;
     private String phoneNumber;
-    private String address;
+    private Customer customer;
     private String status;
-    private String provider;
-    private String roleName;
 }

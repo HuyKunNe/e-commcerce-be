@@ -24,9 +24,11 @@ import com.huykun.ecommercebe.constant.validate.ValidationErrorMessage;
 import com.huykun.ecommercebe.dto.LoginDTO;
 import com.huykun.ecommercebe.dto.RegisterDTO;
 import com.huykun.ecommercebe.entity.Account;
+import com.huykun.ecommercebe.entity.Customer;
 import com.huykun.ecommercebe.entity.Role;
 import com.huykun.ecommercebe.exception.BadRequestException;
 import com.huykun.ecommercebe.repository.AccountRepository;
+import com.huykun.ecommercebe.repository.CustomerRepository;
 import com.huykun.ecommercebe.repository.RoleRepository;
 import com.huykun.ecommercebe.response.AccountResponse;
 import com.huykun.ecommercebe.service.AccountService;
@@ -39,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class AccountServiceImp implements AccountService {
 
         private final AccountRepository accountRepository;
+        private final CustomerRepository customerRepository;
         private final SecretKey secretKey;
         private final JwtConfig jwtConfig;
         private final PasswordEncoder passwordEncoder;
@@ -48,8 +51,8 @@ public class AccountServiceImp implements AccountService {
 
         @Override
         public AccountResponse register(RegisterDTO registerDTO) throws BadRequestException {
-                Optional<Account> accountCheck = accountRepository.findByPhoneNumber(registerDTO.getPhoneNumber());
-                if (accountCheck.isPresent()) {
+                Optional<Customer> customerCheck = customerRepository.findByPhoneNumber(registerDTO.getPhoneNumber());
+                if (customerCheck.isPresent()) {
                         throw new BadRequestException(ValidationErrorMessage.PHONE_IS_EXIST);
                 }
                 Optional<Account> account = accountRepository.findByEmail(registerDTO.getEmail());
@@ -66,26 +69,30 @@ public class AccountServiceImp implements AccountService {
 
                 Account newAccount = Account.builder()
                                 .email(registerDTO.getEmail())
-                                .firstName(registerDTO.getFirstName())
-                                .lastName(registerDTO.getLastName())
-                                .gender(registerDTO.getGender())
-                                .phoneNumber(registerDTO.getPhoneNumber())
-                                .dob(Date.valueOf(dob))
                                 .status(AccountStatus.ACTIVATED)
                                 .provider(DataConstant.PROVIDER_LOCAL)
                                 .role(role)
                                 .password(passwordEncoder.encode(registerDTO.getPassword())).build();
 
+                Customer customer = Customer.builder().firstName(registerDTO.getFirstName())
+                                .lastName(registerDTO.getLastName()).dob(Date.valueOf(dob))
+                                .gender(registerDTO.getGender()).phoneNumber(registerDTO.getPhoneNumber()).build();
+
                 Account newAccountSaved = accountRepository.save(newAccount);
+                customer.setAccount(newAccountSaved);
+                Customer customerSaved = customerRepository.save(customer);
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(registerDTO.getEmail(),
                                 registerDTO.getPassword());
                 Authentication authenticate = authenticationManager.authenticate(authentication);
                 String token = Utils.buildJWT(authenticate, newAccount, secretKey, jwtConfig);
-                responseDTO = modelMapper.map(newAccountSaved, AccountResponse.class);
-                responseDTO.setFullName(newAccount.getFirstName() + " " +
-                                newAccount.getLastName());
+                responseDTO = modelMapper.map(customerSaved, AccountResponse.class);
                 responseDTO.setRoleName(role.getName());
+                responseDTO.setAccountId(newAccountSaved.getId());
+                responseDTO.setDob(registerDTO.getDob().toString());
+                responseDTO.setFullName(registerDTO.getFirstName() + " " + registerDTO.getLastName());
+                responseDTO.setGender(registerDTO.getGender());
+                responseDTO.setPhoneNumber(registerDTO.getPhoneNumber());
                 responseDTO.setToken(token);
                 return responseDTO;
         }
@@ -100,23 +107,26 @@ public class AccountServiceImp implements AccountService {
                 Authentication authenticate = authenticationManager.authenticate(authentication);
                 if (authenticate.isAuthenticated()) {
                         String token = Utils.buildJWT(authenticate, account, secretKey, jwtConfig);
-
                         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        LocalDate dateFormat = LocalDate.parse(account.getDob().toString(), format);
 
                         responseDTO = AccountResponse.builder()
                                         .token(token)
-                                        .id(account.getId())
-                                        .fullName(account.getFirstName() + " " + account.getLastName())
-                                        .dob(dateFormat.toString())
-                                        .gender(account.getGender())
+                                        .accountId(account.getId())
                                         .email(account.getEmail())
-                                        .phoneNumber(account.getPhoneNumber())
                                         .status(account.getStatus())
                                         .provider(account.getProvider())
                                         .roleName(account.getRole().getName())
                                         .build();
-
+                        if (account.getRole().getName().equalsIgnoreCase(RoleName.CUSTOMER)) {
+                                Customer customer = account.getCustomer();
+                                if (customer != null) {
+                                        LocalDate dateFormat = LocalDate.parse(customer.getDob().toString(), format);
+                                        responseDTO.setDob(dateFormat.toString());
+                                        responseDTO.setFullName(customer.getFirstName() + " " + customer.getLastName());
+                                        responseDTO.setGender(customer.getGender());
+                                        responseDTO.setPhoneNumber(customer.getPhoneNumber());
+                                }
+                        }
                 }
                 return responseDTO;
         }

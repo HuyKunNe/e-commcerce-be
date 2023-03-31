@@ -1,6 +1,5 @@
 package com.huykun.ecommercebe.entity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -8,14 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,35 +24,28 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Table(name = "account")
+@Table(name = "address")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Account {
-
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JsonIgnore
-    private String password;
-    private String email;
+    private String company;
+    private String nationality;
+    private String city;
+    private String district;
+    private String street;
+    private String apartment;
+    private String phoneNumber;
     private String status;
-
-    @JsonIgnore
-    private String provider;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "roleId")
-    @EqualsAndHashCode.Include
-    @ToString.Include
-    private Role role;
-
-    @JsonBackReference
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @JoinColumn(name = "customerId")
     @EqualsAndHashCode.Include
     @ToString.Include
     private Customer customer;
-
 }

@@ -1,20 +1,20 @@
 package com.huykun.ecommercebe.entity;
 
+import java.sql.Date;
+import java.util.Collection;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Nationalized;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -29,35 +29,33 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Table(name = "account")
+@Table(name = "customer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Account {
-
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JsonIgnore
-    private String password;
-    private String email;
-    private String status;
+    @Nationalized
+    private String firstName;
+    @Nationalized
+    private String lastName;
+    private String gender;
+    private String phoneNumber;
+    private Date dob;
 
-    @JsonIgnore
-    private String provider;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "roleId")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
     @EqualsAndHashCode.Include
     @ToString.Include
-    private Role role;
+    @JsonIgnore
+    private Account account;
 
-    @JsonBackReference
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Include
     @ToString.Include
-    private Customer customer;
-
+    @JsonIgnore
+    private Collection<Address> addresses;
 }
