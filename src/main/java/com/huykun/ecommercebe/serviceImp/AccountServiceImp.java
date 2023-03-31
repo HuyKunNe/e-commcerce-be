@@ -89,6 +89,7 @@ public class AccountServiceImp implements AccountService {
                 responseDTO = modelMapper.map(customerSaved, AccountResponse.class);
                 responseDTO.setRoleName(role.getName());
                 responseDTO.setAccountId(newAccountSaved.getId());
+                responseDTO.setCustomerId(customerSaved.getId());
                 responseDTO.setDob(registerDTO.getDob().toString());
                 responseDTO.setFullName(registerDTO.getFirstName() + " " + registerDTO.getLastName());
                 responseDTO.setGender(registerDTO.getGender());
@@ -125,6 +126,7 @@ public class AccountServiceImp implements AccountService {
                                         responseDTO.setFullName(customer.getFirstName() + " " + customer.getLastName());
                                         responseDTO.setGender(customer.getGender());
                                         responseDTO.setPhoneNumber(customer.getPhoneNumber());
+                                        responseDTO.setCustomerId(customer.getId());
                                 }
                         }
                 }

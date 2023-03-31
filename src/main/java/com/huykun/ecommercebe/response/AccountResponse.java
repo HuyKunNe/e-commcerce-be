@@ -17,6 +17,7 @@ public class AccountResponse {
 
     private String token;
     private int accountId;
+    private int customerId;
     private String email;
     private String fullName;
     private String gender;

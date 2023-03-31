@@ -18,7 +18,8 @@ public class AddressCreateDTO {
     private String nationality;
     private String city;
     private String district;
+    private String ward;
     private String street;
-    private String apartment;
+    private String no;
     private String phoneNumber;
 }
