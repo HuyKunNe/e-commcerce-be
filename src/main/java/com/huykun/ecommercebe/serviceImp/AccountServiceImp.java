@@ -18,7 +18,6 @@ import com.huykun.ecommercebe.config.JwtConfig;
 import com.huykun.ecommercebe.constant.DataConstant;
 import com.huykun.ecommercebe.constant.account.AccountErrorMessage;
 import com.huykun.ecommercebe.constant.account.AccountStatus;
-import com.huykun.ecommercebe.constant.account.AuthErrorMessage;
 import com.huykun.ecommercebe.constant.role.RoleErrorMessage;
 import com.huykun.ecommercebe.constant.role.RoleName;
 import com.huykun.ecommercebe.constant.validate.ValidationErrorMessage;
@@ -117,8 +116,8 @@ public class AccountServiceImp implements AccountService {
                                         .provider(account.getProvider())
                                         .roleName(account.getRole().getName())
                                         .build();
-                } else
-                        throw new BadRequestException(AuthErrorMessage.INVALID_EMAIL_PASSWORD);
+
+                }
                 return responseDTO;
         }
 

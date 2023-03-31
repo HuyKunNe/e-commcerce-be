@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.huykun.ecommercebe.constant.ResponseStatusConstant;
+import com.huykun.ecommercebe.constant.account.AuthErrorMessage;
 import com.huykun.ecommercebe.response.ResponseDTO;
 
 @RestControllerAdvice
@@ -38,11 +40,11 @@ public class ExceptionHandlers extends RuntimeException {
         return ResponseEntity.badRequest().body(dto);
     }
 
-    // @ExceptionHandler(value = { BadRequestException.class, AuthenticationException.class })
-    // public ResponseEntity<Object> usernameOrPasswordNotFound(AuthenticationException exception) {
-    //     ResponseDTO dto = new ResponseDTO();
-    //     dto.setMessage(AuthErrorMessage.INVALID_EMAIL_PASSWORD);
-    //     dto.setStatus(ResponseStatusConstant.FAILURE);
-    //     return ResponseEntity.badRequest().body(dto);
-    // }
+    @ExceptionHandler(value = { UsernameOrPasswordNotFoundException.class, AuthenticationException.class })
+    public ResponseEntity<Object> usernameOrPasswordNotFound(AuthenticationException exception) {
+        ResponseDTO dto = new ResponseDTO();
+        dto.setMessage(AuthErrorMessage.INVALID_EMAIL_PASSWORD);
+        dto.setStatus(ResponseStatusConstant.FAILURE);
+        return ResponseEntity.badRequest().body(dto);
+    }
 }
