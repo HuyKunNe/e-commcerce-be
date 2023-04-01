@@ -33,6 +33,7 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private String name;
     private String company;
     private String nationality;
     private String city;

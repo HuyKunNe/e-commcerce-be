@@ -1,4 +1,6 @@
-package com.huykun.ecommercebe.dto;
+package com.huykun.ecommercebe.response.address;
+
+import com.huykun.ecommercebe.entity.Customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +15,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddressCreateDTO {
+public class AddressSingleResponse {
+    private int id;
     private String name;
     private String company;
     private String nationality;
@@ -23,4 +26,5 @@ public class AddressCreateDTO {
     private String street;
     private String no;
     private String phoneNumber;
+    private Customer customer;
 }

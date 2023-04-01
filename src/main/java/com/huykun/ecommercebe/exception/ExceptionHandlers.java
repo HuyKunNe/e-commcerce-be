@@ -40,6 +40,14 @@ public class ExceptionHandlers extends RuntimeException {
         return ResponseEntity.badRequest().body(dto);
     }
 
+    @ExceptionHandler(value = ListEmptyException.class)
+    public ResponseEntity<Object> listEmptyException(ListEmptyException exception) {
+        ResponseDTO dto = new ResponseDTO();
+        dto.setMessage(exception.getMessage());
+        dto.setStatus(ResponseStatusConstant.FAILURE);
+        return ResponseEntity.ok().body(dto);
+    }
+
     @ExceptionHandler(value = { UsernameOrPasswordNotFoundException.class, AuthenticationException.class })
     public ResponseEntity<Object> usernameOrPasswordNotFound(AuthenticationException exception) {
         ResponseDTO dto = new ResponseDTO();

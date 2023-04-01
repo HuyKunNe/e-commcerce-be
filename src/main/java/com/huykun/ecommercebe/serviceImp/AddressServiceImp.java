@@ -1,17 +1,23 @@
 package com.huykun.ecommercebe.serviceImp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.huykun.ecommercebe.constant.address.AddressErrorMessage;
+import com.huykun.ecommercebe.constant.customer.CustomerErrorMessage;
 import com.huykun.ecommercebe.dto.AddressCreateDTO;
 import com.huykun.ecommercebe.entity.Address;
 import com.huykun.ecommercebe.entity.Customer;
 import com.huykun.ecommercebe.exception.BadRequestException;
+import com.huykun.ecommercebe.exception.ListEmptyException;
 import com.huykun.ecommercebe.repository.AddressRepository;
 import com.huykun.ecommercebe.repository.CustomerRepository;
-import com.huykun.ecommercebe.response.AddressResponse;
+import com.huykun.ecommercebe.response.address.AddressResponse;
+import com.huykun.ecommercebe.response.address.AddressSingleResponse;
+import com.huykun.ecommercebe.response.address.ListAddressResponse;
 import com.huykun.ecommercebe.service.AddressService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +31,11 @@ public class AddressServiceImp implements AddressService {
     private final ModelMapper modelMapper;
 
     @Override
-    public AddressResponse createAddress(int customerId, AddressCreateDTO createDTO) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new BadRequestException(" "));
+    public AddressSingleResponse createAddress(int customerId, AddressCreateDTO createDTO) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new BadRequestException(CustomerErrorMessage.NOT_FOUND));
         Address address = Address.builder()
+                .name(createDTO.getName())
                 .company(createDTO.getCompany())
                 .nationality(createDTO.getNationality())
                 .city(createDTO.getCity())
@@ -39,25 +47,40 @@ public class AddressServiceImp implements AddressService {
                 .phoneNumber(createDTO.getPhoneNumber())
                 .build();
         Address addressSaved = addressRepository.save(address);
-        AddressResponse responseDTO = new AddressResponse();
-        responseDTO = modelMapper.map(addressSaved, AddressResponse.class);
+        AddressSingleResponse responseDTO = new AddressSingleResponse();
+        responseDTO = modelMapper.map(addressSaved, AddressSingleResponse.class);
         return responseDTO;
     }
 
     @Override
-    public List<AddressResponse> getAllAddressByCustomer(int customerId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllAddressByCustomer'");
+    public ListAddressResponse getAllAddressByCustomer(int customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new BadRequestException(CustomerErrorMessage.NOT_FOUND));
+        ListAddressResponse responseDTO = new ListAddressResponse();
+        List<Address> addresses = addressRepository.findAddressByCustomer(customer);
+        if (addresses.size() != 0) {
+            List<AddressResponse> listAddressResponses = new ArrayList<AddressResponse>();
+            for (Address address : addresses) {
+                AddressResponse addressResponse = new AddressResponse();
+                addressResponse = modelMapper.map(address, AddressResponse.class);
+                listAddressResponses.add(addressResponse);
+            }
+            responseDTO.setAddresses(listAddressResponses);
+            responseDTO.setCustomer(customer);
+        } else {
+            throw new ListEmptyException(AddressErrorMessage.LIST_EMPTY);
+        }
+        return responseDTO;
     }
 
     @Override
-    public AddressResponse getAddressById(int id) {
+    public AddressSingleResponse getAddressById(int id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getAddressById'");
     }
 
     @Override
-    public AddressResponse updatAddressById(int id, AddressCreateDTO createDTO) {
+    public AddressSingleResponse updatAddressById(int id, AddressCreateDTO createDTO) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updatAddressById'");
     }
@@ -67,5 +90,4 @@ public class AddressServiceImp implements AddressService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAddress'");
     }
-
 }

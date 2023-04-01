@@ -1,6 +1,4 @@
-package com.huykun.ecommercebe.response;
-
-import com.huykun.ecommercebe.entity.Customer;
+package com.huykun.ecommercebe.response.address;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +15,7 @@ import lombok.ToString;
 @Builder
 public class AddressResponse {
     private int id;
+    private String name;
     private String company;
     private String nationality;
     private String city;
@@ -25,6 +24,4 @@ public class AddressResponse {
     private String street;
     private String no;
     private String phoneNumber;
-    private Customer customer;
-    private String status;
 }

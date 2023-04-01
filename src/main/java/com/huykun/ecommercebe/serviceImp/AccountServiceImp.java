@@ -86,7 +86,7 @@ public class AccountServiceImp implements AccountService {
                                 registerDTO.getPassword());
                 Authentication authenticate = authenticationManager.authenticate(authentication);
                 String token = Utils.buildJWT(authenticate, newAccount, secretKey, jwtConfig);
-                responseDTO = modelMapper.map(customerSaved, AccountResponse.class);
+                responseDTO = modelMapper.map(newAccountSaved, AccountResponse.class);
                 responseDTO.setRoleName(role.getName());
                 responseDTO.setAccountId(newAccountSaved.getId());
                 responseDTO.setCustomerId(customerSaved.getId());

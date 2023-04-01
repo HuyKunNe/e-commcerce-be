@@ -23,7 +23,6 @@ public class AccountResponse {
     private String gender;
     private String dob;
     private String phoneNumber;
-    private String address;
     private String status;
     private String provider;
     private String roleName;
